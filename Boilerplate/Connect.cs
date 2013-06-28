@@ -14,49 +14,98 @@ namespace Boilerplate
 		{
 		}
 
+		private CommandBarPopup boilerplatePopup = null;
+
 		public void OnConnection(object application, ext_ConnectMode connectMode, object addInInst, ref Array custom)
 		{
 			_application = (DTE2)application;
 			_addinInstance = (AddIn)addInInst;
 
+			Command autoCommand = null;
+			Command headerCommand = null;
+			Command implemenatationCommand = null;
+
+			if (connectMode != ext_ConnectMode.ext_cm_UISetup)
+			{
+				try
+				{
+					autoCommand = _application.Commands.Item(_addinInstance.ProgID + ".AutoFile");
+				}
+				catch
+				{
+				}
+				try
+				{
+					headerCommand = _application.Commands.Item(_addinInstance.ProgID + ".HeaderFile");
+				}
+				catch
+				{
+				}
+				try
+				{
+					implemenatationCommand = _application.Commands.Item(_addinInstance.ProgID + ".ImplementationFile");
+				}
+				catch
+				{
+				}
+			}
+			
+			if (autoCommand == null)
+			{
+				autoCommand = _application.Commands.AddNamedCommand(_addinInstance, "AutoFile", "Auto", "Generate appropriate boilerplate code.", true);
+			}
+			if (headerCommand == null)
+			{
+				headerCommand = _application.Commands.AddNamedCommand(_addinInstance, "HeaderFile", "Header", "Generate header file boilerplate code.", true);
+			}
+			if (implemenatationCommand == null)
+			{
+				implemenatationCommand = _application.Commands.AddNamedCommand(_addinInstance, "ImplementationFile", "Impl", "Generate implementation file boilerplate code.", true);
+			}
+
 			CommandBar menuBarCommandBar = ((CommandBars)_application.CommandBars)["MenuBar"];
 			CommandBarControl toolsControl = menuBarCommandBar.Controls["Tools"];
 			CommandBarPopup toolsPopup = (CommandBarPopup)toolsControl;
-			CommandBarPopup boilerplatePopup = null;
 
 			try
 			{
 				boilerplatePopup = (CommandBarPopup)toolsPopup.Controls["Boilerplate"];
-				boilerplatePopup.Delete(false);
-				boilerplatePopup = null;
 			}
 			catch
 			{
 			}
 
-			if ((connectMode == ext_ConnectMode.ext_cm_Startup || connectMode == ext_ConnectMode.ext_cm_AfterStartup) &&
-				(boilerplatePopup == null))
+			if (boilerplatePopup == null)
 			{
-				boilerplatePopup = (CommandBarPopup)toolsPopup.Controls.Add(MsoControlType.msoControlPopup);
+				boilerplatePopup = (CommandBarPopup)toolsPopup.Controls.Add(MsoControlType.msoControlPopup, Type.Missing, Type.Missing, toolsPopup.Controls.Count + 1, true);
+				boilerplatePopup.CommandBar.Name = "Boilerplate";
 				boilerplatePopup.Caption = "Boilerplate";
 				boilerplatePopup.BeginGroup = true;
 
-				Command autoCommand = _application.Commands.AddNamedCommand(_addinInstance, "AutoFile", "Auto", "Generate appropriate boilerplate code.", true);
 				CommandBarControl autoControl = (CommandBarControl)autoCommand.AddControl(boilerplatePopup.CommandBar, 1);
 				autoControl.Caption = "Automatic";
 
-				Command headerCommand = _application.Commands.AddNamedCommand(_addinInstance, "HeaderFile", "Header", "Generate header file boilerplate code.", true);
 				CommandBarControl headerControl = (CommandBarControl)headerCommand.AddControl(boilerplatePopup.CommandBar, 2);
 				headerControl.Caption = "Generate Header File";
 
-				Command implemenatationCommand = _application.Commands.AddNamedCommand(_addinInstance, "ImplementationFile", "Impl", "Generate implementation file boilerplate code.", true);
 				CommandBarControl implControl = (CommandBarControl)implemenatationCommand.AddControl(boilerplatePopup.CommandBar, 3);
 				implControl.Caption = "Generate Implementation File";
 			}
+
 		}
 
 		public void OnDisconnection(ext_DisconnectMode disconnectMode, ref Array custom)
 		{
+			try
+			{
+				if (boilerplatePopup != null)
+				{
+					boilerplatePopup.Delete(true);
+				}
+			}
+			catch
+			{
+			}
 		}
 
 		public void OnAddInsUpdate(ref Array custom)
@@ -78,17 +127,17 @@ namespace Boilerplate
 
 			if (ExecuteOption == vsCommandExecOption.vsCommandExecOptionDoDefault)
 			{
-				if (CmdName == "Boilerplate.Connect.HeaderFile")
+				if (CmdName == _addinInstance.ProgID + ".HeaderFile")
 				{
 					InsertHeaderFileBoilerplate(currentDocument);
 					Handled = true;
 				}
-				else if (CmdName == "Boilerplate.Connect.ImplementationFile")
+				else if (CmdName == _addinInstance.ProgID + ".ImplementationFile")
 				{
 					InsertImplementationFileBoilerplate(currentDocument);
 					Handled = true;
 				}
-				else if (CmdName == "Boilerplate.Connect.AutoFile")
+				else if (CmdName == _addinInstance.ProgID + ".AutoFile")
 				{
 					if (IsHeaderFile(currentDocument))
 					{
