@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>class header</Title>
+			<Shortcut>class-header</Shortcut>
+			<Description>Basic class declaration for a header file</Description>
+			<Author>Dominik Grabiec</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+				<SnippetType>SurroundsWith</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>name</ID>
+					<ToolTip>Class name</ToolTip>
+					<Default>TheClass</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="cpp"><![CDATA[class $name$
+	{
+	private:
+
+	public:
+		$name$();
+		~$name$();
+
+		$selected$ $end$
+
+	private:
+		$name$(const $name$&); // = delete
+		$name$& operator = (const $name$&); // = delete
+	};
+]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
