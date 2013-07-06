@@ -227,15 +227,15 @@ namespace Boilerplate
 			using (new UndoBlock(_application, "Inserted header file boilerplate code"))
 			{
 				editPoint.StartOfDocument();
-				editPoint.Insert("#pragma once\n");
-				editPoint.Insert("#ifndef " + header_guard + "\n");
-				editPoint.Insert("#define " + header_guard + "\n");
-				editPoint.Insert("\n");
+				editPoint.Insert("#pragma once\r\n");
+				editPoint.Insert("#ifndef " + header_guard + "\r\n");
+				editPoint.Insert("#define " + header_guard + "\r\n");
+				editPoint.Insert("\r\n");
 				EditPoint cursorPoint = editPoint.CreateEditPoint();
-				editPoint.Insert("\n");
+				editPoint.Insert("\r\n");
 
 				editPoint.EndOfDocument();
-				editPoint.Insert("\n#endif // " + header_guard + "\n");
+				editPoint.Insert("\r\n#endif // " + header_guard + "\r\n");
 
 				selection.GotoLine(cursorPoint.Line);
 			}
@@ -250,21 +250,21 @@ namespace Boilerplate
 			TextSelection selection = (TextSelection)document.Selection;
 			EditPoint editPoint = selection.ActivePoint.CreateEditPoint();
 
-			String precompiled_header = "Precompiled";
+			String precompiled_header = "Precompiled.hpp";
 			try
 			{
 				precompiled_header = (String)document.ProjectItem.Properties.Item("Precompiled Header File").Value;
 			}
-			catch (Exception e)
+			catch
 			{
 			}
 
 			using (new UndoBlock(_application, "Inserted implementation file boilerplate code"))
 			{
 				editPoint.StartOfDocument();
-				editPoint.Insert("#include \"" + precompiled_header + header_extension + "\"\n");
-				editPoint.Insert("#include \"" + basename + header_extension + "\"\n");
-				editPoint.Insert("\n");
+				editPoint.Insert("#include \"" + precompiled_header + "\"\r\n");
+				editPoint.Insert("#include \"" + basename + header_extension + "\"\r\n");
+				editPoint.Insert("\r\n");
 
 				selection.GotoLine(editPoint.Line);
 			}
